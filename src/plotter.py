@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-
+import time
 
 class Plotter:
     def __init__(self):
@@ -27,9 +27,10 @@ class Plotter:
         self.ax.set_xlim(0, max(1, len(self.scores)))
         self.ax.set_ylim(0, max(10, max(self.scores) + 5))
 
-        self.fig.canvas.draw()
+        self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events()
-        plt.pause(0.1)
+        time.sleep(0.5)
+
 
     def save(self, path: str = "records/training_plot.png"):
         self.fig.savefig(path)
