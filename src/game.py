@@ -235,11 +235,12 @@ class Food:
 
 # --- Game chính ---
 class SnakeGameAI:
-    def __init__(self, width=SCREEN_WIDTH, height=SCREEN_HEIGHT, render=True, speed=FPS):
-        self.width = width
-        self.height = height
+    def __init__(self, render=True, speed=FPS, ai_mode=False):
+        self.width = SCREEN_WIDTH
+        self.height = SCREEN_HEIGHT
         self.render = render
         self.speed = speed
+        self.ai_mode = ai_mode
 
         if self.render:            
             self.screen = pygame.display.set_mode((self.width, self.height))
@@ -247,7 +248,10 @@ class SnakeGameAI:
             self.clock = pygame.time.Clock()
 
         scores = ScoreManager()
-        self.highscore = scores.get_human_highscore()
+        if self.ai_mode:
+            self.highscore = scores.get_ai_highscore()
+        else:
+            self.highscore = scores.get_human_highscore()
         self.reset_game()
         self.state = "MENU"  # MENU, PLAYING, GAMEOVER
         self.particles = []
@@ -426,7 +430,7 @@ class SnakeGameAI:
         game_over = False
 
         if self.state == "PLAYING":
-            self.frame_iteration = 0
+            self.frame_iteration += 1
             
             # Xử lý sự kiện thoát
             if self.render:
@@ -441,7 +445,7 @@ class SnakeGameAI:
 
 
             # Kiểm tra va chạm hoặc đi lòng vòng quá lâu
-            if not self.snake.alive or self.frame_iteration > 100 * len(self.snake.body):
+            if not self.snake.alive or self.frame_iteration > 900 * len(self.snake.body):
                 if self.score > self.highscore:
                     self.highscore = self.score
                 game_over = True

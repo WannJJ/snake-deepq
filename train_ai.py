@@ -4,16 +4,14 @@ from src.game import SnakeGameAI
 from src.plotter import Plotter
 from src.score_manager import ScoreManager
 
-RENDER = True
-SPEED = 160
+RENDER = True # Để render=True nếu muốn quan sát AI học, render=False để train siêu nhanh
+SPEED = 250
 
 def train(resume_model: str = None):
     plotter = Plotter()
     scores = ScoreManager()
     agent = Agent(model_path=resume_model)
-
-    # Để render=True nếu muốn quan sát AI học, render=False để train siêu nhanh
-    game = SnakeGameAI(render=RENDER, speed=SPEED)
+    game = SnakeGameAI(render=RENDER, speed=SPEED, ai_mode=True)
     
     game.state = "PLAYING"
 
@@ -62,6 +60,9 @@ def train(resume_model: str = None):
                 # Save checkpoint mỗi 50 games
                 if agent.n_games % 50 == 0:
                     agent.model.save("checkpoints/model_checkpoint.pth")
+
+                # Restart game
+                game.state = "PLAYING"
 
     except KeyboardInterrupt:
         print("\n🛑 Training interrupted.")

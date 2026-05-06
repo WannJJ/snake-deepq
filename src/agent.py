@@ -9,6 +9,8 @@ from pygame.math import Vector2
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LR = 0.001
+EPSILON = 0.01     # Tham số exploration
+GAMMA = 0.9     # Discount rate
 INPUT_SIZE = 11
 HIDDEN_SIZE = 256
 OUTPUT_SIZE = 3
@@ -17,8 +19,8 @@ OUTPUT_SIZE = 3
 class Agent:
     def __init__(self, model_path: str = None):
         self.n_games = 0
-        self.epsilon = 0          # Tham số exploration
-        self.gamma = 0.9          # Discount rate
+        self.epsilon = 0          
+        self.gamma = 0.9          
         self.memory = deque(maxlen=MAX_MEMORY)
 
         self.model = LinearQNet(input_size=INPUT_SIZE, hidden_size=HIDDEN_SIZE, output_size=OUTPUT_SIZE)

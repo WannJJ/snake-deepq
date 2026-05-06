@@ -38,7 +38,7 @@ def get_human_action(game):
 
 def play():
     pygame.init()
-    game = SnakeGameAI(render=True, speed=SPEED)
+    game = SnakeGameAI(render=True, speed=SPEED, ai_mode=False)
     scores = ScoreManager()
 
     print("🎮 HUMAN MODE")
