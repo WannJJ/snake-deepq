@@ -4,10 +4,10 @@ from src.game import SnakeGameAI
 from src.plotter import Plotter
 from src.score_manager import ScoreManager
 
-RENDER = True # Để render=True nếu muốn quan sát AI học, render=False để train siêu nhanh
-SPEED = 250
+RENDER = True
+SPEED = 160
 
-def train(resume_model: str = None):
+def watch(resume_model: str = "checkpoints/model_best.pth"):
     plotter = Plotter()
     scores = ScoreManager()
     agent = Agent(model_path=resume_model)
@@ -18,8 +18,9 @@ def train(resume_model: str = None):
     total_score = 0
     record = scores.get_ai_highscore()
 
-    print("🤖 TRAINING MODE")
-    print(f"Current AI High Score: {record}")
+    print("👀 WATCH AI MODE")
+    print(f"AI High Score: {scores.get_ai_highscore()}")
+    print("ESC hoặc đóng cửa sổ để thoát.\n")
 
 
     try:
@@ -50,18 +51,15 @@ def train(resume_model: str = None):
                         f"Score: {score:>3} | Mean: {mean_score:.2f} | Record: {record}"
                     )
 
-                plotter.plot(score, mean_score)
+                #plotter.plot(score)
 
                 # Restart game
                 game.state = "PLAYING"
 
     except KeyboardInterrupt:
-        print("\n🛑 Training interrupted.")
-        plotter.save(path="records/performing_plot.png")
-        plotter.close()
-        print("💾 Plot saved!")
+        print("\n🛑 Watching interrupted.")
 
 
 if __name__ == "__main__":
-    model_path = sys.argv[1] if len(sys.argv) > 1 else None
-    train(resume_model=model_path)
+    model_path = sys.argv[1] if len(sys.argv) > 1 else "checkpoints/model_best.pth"
+    watch(resume_model=model_path)

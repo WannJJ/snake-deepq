@@ -18,9 +18,10 @@ class LinearQNet(nn.Module):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         torch.save(self.state_dict(), file_path)
 
-    def load(self, file_path: str = "checkpoints/model.pth") -> bool:
+    def load(self, file_path: str = "checkpoints/model.pth", device="cpu") -> bool:
         if os.path.exists(file_path):
-            self.load_state_dict(torch.load(file_path, weights_only=True))
+            self.load_state_dict(torch.load(file_path, map_location=device, weights_only=True))
+            self.to(device)
             self.eval()
             return True
         return False

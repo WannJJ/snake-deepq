@@ -15,6 +15,9 @@ CELL_SIZE = 30
 CELL_NUMBER = 20
 SCREEN_WIDTH = CELL_NUMBER * CELL_SIZE
 SCREEN_HEIGHT = CELL_NUMBER * CELL_SIZE + 80  # Thêm chỗ cho UI
+# Timeout: càng dài thì càng khó xoay trở, nên cho nhiều bước hơn
+MIN_STEPS = 100          # ít nhất 100 bước để tìm mồi
+BONUS_PER_BLOCK = 50     # mỗi đốt thân +50 bước
 
 FPS = 60
 
@@ -263,6 +266,7 @@ class SnakeGameAI:
         self.score = 0
         self.particles = []
         self.frame_iteration = 0
+        self.steps_since_last_food = 0
 
     def get_state(self):
         """
@@ -352,7 +356,7 @@ class SnakeGameAI:
         pulse = math.sin(self.time * 3) * 5
         self.screen.blit(sub, (SCREEN_WIDTH // 2 - sub.get_width() // 2, 320 + pulse))
 
-        hint = font_small.render("⬆️⬇️⬅️➡️ to move", True, (148, 163, 184))
+        hint = font_small.render("Arrow Keys to move", True, (148, 163, 184))
         self.screen.blit(hint, (SCREEN_WIDTH // 2 - hint.get_width() // 2, 400))
 
         best = font_sub.render(f"High Score: {self.highscore}", True, GOLD)
@@ -431,6 +435,7 @@ class SnakeGameAI:
 
         if self.state == "PLAYING":
             self.frame_iteration += 1
+            self.steps_since_last_food += 1
             
             # Xử lý sự kiện thoát
             if self.render:
@@ -443,9 +448,9 @@ class SnakeGameAI:
             self.snake._move(action)
             self.snake.update()
 
-
+            step_limit = MIN_STEPS + BONUS_PER_BLOCK * len(self.snake.body)
             # Kiểm tra va chạm hoặc đi lòng vòng quá lâu
-            if not self.snake.alive or self.frame_iteration > 900 * len(self.snake.body):
+            if not self.snake.alive or (self.ai_mode and self.steps_since_last_food > step_limit):
                 if self.score > self.highscore:
                     self.highscore = self.score
                 game_over = True
@@ -458,6 +463,8 @@ class SnakeGameAI:
                 self.snake.grow_snake()
                 self.score += 10
                 reward = 10
+                self.steps_since_last_food = 0   # <-- reset khi ăn được
+
                 self.spawn_particles(self.food.pos)
                 self.food.randomize()
                 # Đảm bảo mồi không spawn trên thân rắn

@@ -66,10 +66,20 @@ def train(resume_model: str = None):
 
     except KeyboardInterrupt:
         print("\n🛑 Training interrupted.")
+    finally:
+        # Luôn lưu model dù có lỗi gì
         agent.model.save("checkpoints/model_last.pth")
-        plotter.save()
+        print("💾 Model saved to checkpoints/model_last.pth")
+        
+        # Cố gắng lưu plot, nếu lỗi thì bỏ qua
+        try:
+            plotter.save()
+            print("📊 Plot saved to records/training_plot.png")
+        except Exception as e:
+            print(f"⚠️ Could not save plot: {e}")
+        
         plotter.close()
-        print("💾 Model & plot saved!")
+        print("👋 Cleanup done.")
 
 
 if __name__ == "__main__":

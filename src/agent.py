@@ -23,11 +23,16 @@ class Agent:
         self.gamma = 0.9          
         self.memory = deque(maxlen=MAX_MEMORY)
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"🖥️  Using device: {self.device}")
+
         self.model = LinearQNet(input_size=INPUT_SIZE, hidden_size=HIDDEN_SIZE, output_size=OUTPUT_SIZE)
         if model_path:
             self.model.load(model_path)
+            #self.model.load(model_path, device=self.device)
+        self.model.to(self.device)
 
-        self.trainer = QTrainer(self.model, learning_rate=LR, gamma=self.gamma)
+        self.trainer = QTrainer(self.model, learning_rate=LR, gamma=self.gamma, device=self.device)
 
     def get_state(self, game):
         return game.get_state()
@@ -63,7 +68,7 @@ class Agent:
             move = random.randint(0, 2)
             final_move[move] = 1
         else:
-            state0 = torch.tensor(state, dtype=torch.float)
+            state0 = torch.tensor(state, dtype=torch.float).to(self.device)
             prediction = self.model(state0)
             move = torch.argmax(prediction).item()
             final_move[move] = 1
